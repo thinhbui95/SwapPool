@@ -80,10 +80,7 @@ pub mod vd1{
         state.mint_x = ctx.accounts.mint_x.key();
         state.mint_y = ctx.accounts.mint_y.key();
         Ok(())
-        
-
     }
-
 
     pub fn add_liquidity(ctx: Context<AddLP>, amount_x: u64, amount_y: u64, _bump_x: u8, _bump_y: u8) -> Result<()> {
         let state = &mut ctx.accounts.pool_state;
@@ -161,9 +158,7 @@ pub mod vd1{
             ).expect("transfer fail");
         }
         Ok(())
-
     }
-    
 }
 
    
@@ -174,7 +169,6 @@ pub mod vd1{
         pub mint_y:  Pubkey,
         pub is_actived: bool,
     }
-
 
     #[derive(Accounts)]
     pub struct AddPoolLP<'info> {
@@ -194,11 +188,7 @@ pub mod vd1{
         pool_state: Account<'info, InitPool>,
         system_program: Program<'info, System>,
         token_program: Program<'info, Token>,
-
-
     }
-
-
 
     #[derive(Accounts)]
     pub struct AddLP<'info> {
@@ -220,8 +210,6 @@ pub mod vd1{
         #[account(mut)]
         pool_state: Box<Account<'info, InitPool>>,
     
-
-
         #[account(
             init,
             payer = user,
@@ -286,8 +274,6 @@ pub mod vd1{
             constraint=token_pool_y.mint==mint_y.key()
         )]
         token_pool_y: Box<Account<'info, TokenAccount>>,
-
-
     }
     #[derive(Accounts)]
     pub struct NeedInitPool {}
@@ -295,7 +281,6 @@ pub mod vd1{
     #[derive(Accounts)]
     pub struct NotEnough {}
     
-
 
     #[error_code]
     pub enum MyError {
