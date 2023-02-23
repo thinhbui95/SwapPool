@@ -6,8 +6,6 @@ import { createMint, getOrCreateAssociatedTokenAccount, mintTo, getAccount } fro
 const { SystemProgram } = anchor.web3;
 
 
-
-
 let wallet = anchor.web3.Keypair.generate();
 const connection = new solanaWeb3.Connection("http://127.0.0.1:8899", 'confirmed');
 import {
@@ -33,8 +31,6 @@ describe('implement' ,() => {
     );
     console.log("mintAccount_x:" , mint_x)
 
-    
-   
     //Create token account x
     const tokenAccount_x = await getOrCreateAssociatedTokenAccount(
       connection,
@@ -138,8 +134,6 @@ describe('implement' ,() => {
             tokenUserY : tokenAccount_y.address.toBase58(),
             systemProgram: SystemProgram.programId,
             tokenProgram: TOKEN_PROGRAM_ID,
-
-
           },
           signer:[wallet],
         });
@@ -179,10 +173,7 @@ describe('implement' ,() => {
          console.error(error)
       }
 
-
     })
-
-
 });
 
 
