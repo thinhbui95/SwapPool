@@ -9,6 +9,7 @@ const { SystemProgram } = anchor.web3;
 
 
 let wallet = anchor.web3.Keypair.generate();
+let test = anchor.web3.Keypair.generate();
 const connection = new solanaWeb3.Connection("http://127.0.0.1:8899", 'confirmed');
 import {
   TOKEN_PROGRAM_ID,
@@ -132,6 +133,7 @@ describe('implement' ,() => {
             mintX: mint_x,
             mintY: mint_y,
             tokenAccountX : pda_program_token_x,
+            // poolState: test.publicKey,
             poolState: pda_program_pool,
             tokenAccountY : pda_program_token_y,
             tokenUserX : tokenAccount_x.address.toBase58(),
