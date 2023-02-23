@@ -65,7 +65,6 @@ fn caculation_token(input_amount: u64, balance_x: u64, balance_y: u64,check_toke
     } else {
         let receive_token =  x.checked_sub(x.checked_mul(y).unwrap().checked_div(y.checked_add(d).unwrap()).unwrap()).unwrap();
         u64::try_from(receive_token).unwrap()
-
     }
 }
 
@@ -158,10 +157,9 @@ pub mod vd1{
             ).expect("transfer fail");
         }
         Ok(())
-    }
+    } 
 }
 
-   
     #[account]
     #[derive( Default)]
     pub struct InitPool{
@@ -169,6 +167,7 @@ pub mod vd1{
         pub mint_y:  Pubkey,
         pub is_actived: bool,
     }
+
 
     #[derive(Accounts)]
     pub struct AddPoolLP<'info> {
@@ -207,9 +206,14 @@ pub mod vd1{
             token::authority = pool_state,
         )]
         token_account_x: Box<Account<'info, TokenAccount>>,
-        #[account(mut)]
+        #[account(
+            mut,
+            seeds=[b"pool".as_ref(), mint_x.key().as_ref(), mint_y.key().as_ref()],
+            bump,
+            has_one = mint_x.key(),
+            has_one = mint_y.key(),
+        )]
         pool_state: Box<Account<'info, InitPool>>,
-    
         #[account(
             init,
             payer = user,
@@ -233,7 +237,6 @@ pub mod vd1{
         token_user_y: Box<Account<'info, TokenAccount>>,
         system_program: Program<'info, System>,
         token_program: Program<'info, Token>,
-
     }
     #[derive(Accounts)]
     pub struct SwapToken<'info>{
@@ -243,7 +246,6 @@ pub mod vd1{
         mint_x: Box<Account<'info, Mint>>,
         #[account(mut)]
         mint_y: Box<Account<'info, Mint>>,
-
         #[account(
             mut,
             constraint=token_user_x.owner == user.key(),
@@ -260,14 +262,12 @@ pub mod vd1{
         pool_state: Box<Account<'info, InitPool>>,
         system_program: Program<'info, System>,
         token_program: Program<'info, Token>,
-
         #[account(
             mut,
             constraint=token_pool_x.owner==pool_state.key(),
             constraint=token_pool_x.mint==mint_x.key()
         )]
         token_pool_x: Box<Account<'info, TokenAccount>>,
-
         #[account(
             mut,
             constraint=token_pool_y.owner==pool_state.key(),
@@ -281,7 +281,6 @@ pub mod vd1{
     #[derive(Accounts)]
     pub struct NotEnough {}
     
-
     #[error_code]
     pub enum MyError {
         #[msg("Pool haven't created yet")]
