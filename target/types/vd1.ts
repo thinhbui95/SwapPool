@@ -105,14 +105,6 @@ export type Vd1 = {
         {
           "name": "amountY",
           "type": "u64"
-        },
-        {
-          "name": "bumpX",
-          "type": "u8"
-        },
-        {
-          "name": "bumpY",
-          "type": "u8"
         }
       ]
     },
@@ -347,14 +339,6 @@ export const IDL: Vd1 = {
         {
           "name": "amountY",
           "type": "u64"
-        },
-        {
-          "name": "bumpX",
-          "type": "u8"
-        },
-        {
-          "name": "bumpY",
-          "type": "u8"
         }
       ]
     },

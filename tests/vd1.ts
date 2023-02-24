@@ -6,10 +6,7 @@ import { createMint, getOrCreateAssociatedTokenAccount, mintTo, getAccount } fro
 const { SystemProgram } = anchor.web3;
 
 
-
-
 let wallet = anchor.web3.Keypair.generate();
-let test = anchor.web3.Keypair.generate();
 const connection = new solanaWeb3.Connection("http://127.0.0.1:8899", 'confirmed');
 import {
   TOKEN_PROGRAM_ID,
@@ -34,8 +31,6 @@ describe('implement' ,() => {
     );
     console.log("mintAccount_x:" , mint_x)
 
-    
-   
     //Create token account x
     const tokenAccount_x = await getOrCreateAssociatedTokenAccount(
       connection,
@@ -117,36 +112,51 @@ describe('implement' ,() => {
 
 
       //Create token account of pool lp
-      const [pda_program_token_x, bump_x] = await PublicKey.findProgramAddressSync([Buffer.from("swappool"),mint_x.toBuffer()],program.programId)
-      const [pda_program_token_y, bump_y] = await PublicKey.findProgramAddressSync([Buffer.from("swappool"),mint_y.toBuffer()],program.programId)
+      //const [pda_program_token_x, bump_x] = await PublicKey.findProgramAddressSync([Buffer.from("swappool"),mint_x.toBuffer()],program.programId)
+      //const [pda_program_token_y, bump_y] = await PublicKey.findProgramAddressSync([Buffer.from("swappool"),mint_y.toBuffer()],program.programId)
+      
+      
       const amount_x = new anchor.BN(50);
       const amount_y = new anchor.BN(50);
+      
+      const tokenAccount_pdax = await getOrCreateAssociatedTokenAccount(
+        connection,
+        wallet,
+        mint_x,
+        pda_program_pool,
+        true
+      )
+      console.log("tokenAccount_pdax" , tokenAccount_pdax.address.toBase58())
+
+      const tokenAccount_pday = await getOrCreateAssociatedTokenAccount(
+        connection,
+        wallet,
+        mint_y,
+        pda_program_pool,
+        true
+      )
+      console.log("tokenAccount_pday" , tokenAccount_pday.address.toBase58())
       try {
         await program.rpc.addLiquidity(
           amount_x,
           amount_y,
-          bump_x,
-          bump_y,
+          //bump_x,
+          //bump_y,
           {
           accounts: {
             user: wallet.publicKey,
             mintX: mint_x,
             mintY: mint_y,
-            tokenAccountX : pda_program_token_x,
-            // poolState: test.publicKey,
+            tokenAccountX : tokenAccount_pdax.address.toBase58(),
             poolState: pda_program_pool,
-            tokenAccountY : pda_program_token_y,
+            tokenAccountY : tokenAccount_pday.address.toBase58(),
             tokenUserX : tokenAccount_x.address.toBase58(),
             tokenUserY : tokenAccount_y.address.toBase58(),
             systemProgram: SystemProgram.programId,
             tokenProgram: TOKEN_PROGRAM_ID,
-
-
           },
           signer:[wallet],
         });
-        console.log("pda_program_token_x:", pda_program_token_x)
-        console.log("pda_program_token_y:", pda_program_token_y)
       } catch (error) {
         console.error(error)
       }
@@ -170,8 +180,8 @@ describe('implement' ,() => {
             poolState : pda_program_pool,
             systemProgram: SystemProgram.programId,
             tokenProgram: TOKEN_PROGRAM_ID,
-            tokenPoolX: pda_program_token_x,
-            tokenPoolY: pda_program_token_y,
+            tokenPoolX: tokenAccount_pdax.address.toBase58(),
+            tokenPoolY: tokenAccount_pday.address.toBase58(),
           },
           signer:[wallet],
 
@@ -181,12 +191,8 @@ describe('implement' ,() => {
          console.error(error)
       }
 
-
     })
-
-
 });
-
 
 
 

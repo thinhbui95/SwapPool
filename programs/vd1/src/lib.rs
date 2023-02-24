@@ -81,7 +81,7 @@ pub mod vd1{
         Ok(())
     }
 
-    pub fn add_liquidity(ctx: Context<AddLP>, amount_x: u64, amount_y: u64, _bump_x: u8, _bump_y: u8) -> Result<()> {
+    pub fn add_liquidity(ctx: Context<AddLP>, amount_x: u64, amount_y: u64) -> Result<()> {
         let state = &mut ctx.accounts.pool_state;
         let is_actived = state.is_actived;
         if is_actived  == false {
@@ -198,10 +198,11 @@ pub mod vd1{
         #[account(mut)]
         mint_y: Box<Account<'info, Mint>>,
         #[account(
-            init,
-            payer = user,
-            seeds=[b"swappool".as_ref(), mint_x.key().as_ref()],
-            bump,
+            mut,
+            //init,
+            //payer = user,
+            // seeds=[b"swappool".as_ref(), mint_x.key().as_ref()],
+            // bump,
             token::mint = mint_x,
             token::authority = pool_state,
         )]
@@ -215,10 +216,11 @@ pub mod vd1{
         )]
         pool_state: Box<Account<'info, InitPool>>,
         #[account(
-            init,
-            payer = user,
-            seeds=[b"swappool".as_ref(), mint_y.key().as_ref()],
-            bump ,
+            mut,
+            //init,
+            //payer = user,
+            // seeds=[b"swappool".as_ref(), mint_y.key().as_ref()],
+            // bump ,
             token::mint = mint_y,
             token::authority = pool_state,
         )]
@@ -288,7 +290,6 @@ pub mod vd1{
         #[msg("Not enough balance")]
         NotEnough
     }
-
 
 
 
