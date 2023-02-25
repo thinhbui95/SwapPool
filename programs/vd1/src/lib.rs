@@ -73,7 +73,7 @@ pub mod vd1{
     use super::*;
 
 
-    pub fn add_pool(ctx: Context<AddPoolLP>, _bump: u8) -> Result<()> {
+    pub fn add_pool(ctx: Context<AddPoolLP>, _bump: u8,_bump_x: u8, _bump_y: u8) -> Result<()> {
         let state = &mut ctx.accounts.pool_state;
         state.is_actived = true;
         state.mint_x = ctx.accounts.mint_x.key();
@@ -81,7 +81,7 @@ pub mod vd1{
         Ok(())
     }
 
-    pub fn add_liquidity(ctx: Context<AddLP>, amount_x: u64, amount_y: u64, _bump_x: u8, _bump_y: u8) -> Result<()> {
+    pub fn add_liquidity(ctx: Context<AddLP>, amount_x: u64, amount_y: u64) -> Result<()> {
         let state = &mut ctx.accounts.pool_state;
         let is_actived = state.is_actived;
         if is_actived  == false {
@@ -185,6 +185,24 @@ pub mod vd1{
             space = 32 + 32 + 1+ 8,
         )]
         pool_state: Account<'info, InitPool>,
+        #[account(
+            init,
+            payer = user,
+            seeds=[b"swappool".as_ref(), mint_x.key().as_ref()],
+            bump,
+            token::mint = mint_x,
+            token::authority = pool_state,
+        )]
+        token_account_x: Box<Account<'info, TokenAccount>>,
+        #[account(
+            init,
+            payer = user,
+            seeds=[b"swappool".as_ref(), mint_y.key().as_ref()],
+            bump ,
+            token::mint = mint_y,
+            token::authority = pool_state,
+        )]
+        token_account_y: Box<Account<'info, TokenAccount>>,
         system_program: Program<'info, System>,
         token_program: Program<'info, Token>,
     }
@@ -198,14 +216,18 @@ pub mod vd1{
         #[account(mut)]
         mint_y: Box<Account<'info, Mint>>,
         #[account(
-            init,
-            payer = user,
-            seeds=[b"swappool".as_ref(), mint_x.key().as_ref()],
-            bump,
-            token::mint = mint_x,
-            token::authority = pool_state,
+            mut,
+            constraint=token_account_x.owner==pool_state.key(),
+            constraint=token_account_x.mint==mint_x.key()
         )]
         token_account_x: Box<Account<'info, TokenAccount>>,
+
+        #[account(
+            mut,
+            constraint=token_account_y.owner==pool_state.key(),
+            constraint=token_account_y.mint==mint_y.key()
+        )]
+        token_account_y: Box<Account<'info, TokenAccount>>,
         #[account(
             mut,
             seeds=[b"pool".as_ref(), mint_x.key().as_ref(), mint_y.key().as_ref()],
@@ -214,15 +236,7 @@ pub mod vd1{
             has_one = mint_y.key(),
         )]
         pool_state: Box<Account<'info, InitPool>>,
-        #[account(
-            init,
-            payer = user,
-            seeds=[b"swappool".as_ref(), mint_y.key().as_ref()],
-            bump ,
-            token::mint = mint_y,
-            token::authority = pool_state,
-        )]
-        token_account_y: Box<Account<'info, TokenAccount>>,
+
         #[account(
             mut,
             constraint=token_user_x.owner == user.key(),
@@ -288,7 +302,6 @@ pub mod vd1{
         #[msg("Not enough balance")]
         NotEnough
     }
-
 
 
 
