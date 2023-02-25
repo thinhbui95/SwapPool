@@ -203,8 +203,8 @@ pub mod vd1{
             //payer = user,
             // seeds=[b"swappool".as_ref(), mint_x.key().as_ref()],
             // bump,
-            token::mint = mint_x,
-            token::authority = pool_state,
+            constraint=token_account_x.owner==pool_state.key(),
+            constraint=token_account_x.mint==mint_x.key()
         )]
         token_account_x: Box<Account<'info, TokenAccount>>,
         #[account(
@@ -221,8 +221,8 @@ pub mod vd1{
             //payer = user,
             // seeds=[b"swappool".as_ref(), mint_y.key().as_ref()],
             // bump ,
-            token::mint = mint_y,
-            token::authority = pool_state,
+            constraint=token_account_y.owner==pool_state.key(),
+            constraint=token_account_y.mint==mint_.key()
         )]
         token_account_y: Box<Account<'info, TokenAccount>>,
         #[account(
